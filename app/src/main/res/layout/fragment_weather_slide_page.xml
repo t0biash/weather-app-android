@@ -16,8 +16,8 @@
 
     <ImageView
         android:id="@+id/fragmentWeatherImage"
-        android:layout_width="64px"
-        android:layout_height="64px"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:layout_gravity="center_horizontal"
         app:srcCompat="@drawable/ic_launcher_foreground" />
 

@@ -14,8 +14,8 @@
 
         <ImageView
             android:id="@+id/weatherImage"
-            android:layout_width="128px"
-            android:layout_height="128px"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
             android:layout_centerInParent="true"
             android:layout_alignBottom="@id/currentTemperature"
             android:layout_marginBottom="80px"
@@ -36,7 +36,8 @@
         android:layout_weight="0.5">
 
         <fragment
-            android:id="@+id/fragment"
+            android:name="pl.agh.kis.weatherapp.WeatherSlidePageFragment"
+            android:id="@+id/weatherSlidePageFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:layout_editor_absoluteX="-16dp" />
