@@ -2,14 +2,17 @@ package pl.agh.kis.weatherapp;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.SecureRandom;
@@ -31,43 +34,89 @@ public class FetchHelper extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... strings) {
+        String city = strings[0];
+
+        try {
+            String url = String.format("%s%s%s", MetaWeather.URL ,MetaWeather.QueryEndpoint, URLEncoder.encode(city, "UTF-8"));
+            String metaWeatherResponseJsonAsString = getMetaWeatherResponseAsString(url);
+            if(metaWeatherResponseJsonAsString == null)
+                return null;
+            JSONArray locationSearchResponse = new JSONArray(metaWeatherResponseJsonAsString);
+            if(locationSearchResponse.length() == 0)
+                return null;
+            String firstFoundCityLocationId = locationSearchResponse.getJSONObject(0).getString("woeid");
+
+            url = String.format("%s%s%s", MetaWeather.URL, MetaWeather.LocationEndpoint, firstFoundCityLocationId);
+            metaWeatherResponseJsonAsString = getMetaWeatherResponseAsString(url);
+            if(metaWeatherResponseJsonAsString == null)
+                return null;
+
+            return metaWeatherResponseJsonAsString;
+        }
+        catch (UnsupportedEncodingException ex) {
+            ex.printStackTrace();
+        }
+        catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+
+        return null;
+    }
+
+    @Override
+    protected void onPostExecute(String result) {
+        _mainActivity.consolidatedWeatherAsString = result;
+        _mainActivity.onGetConsolidatedWeather();
+    }
+
+    private void trustEveryone() {
+        try {
+            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier(){
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }});
+            SSLContext context = SSLContext.getInstance("TLS");
+            context.init(null, new X509TrustManager[]{new X509TrustManager(){
+                public void checkClientTrusted(X509Certificate[] chain,
+                                               String authType) {}
+                public void checkServerTrusted(X509Certificate[] chain,
+                                               String authType) {}
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }}}, new SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(
+                    context.getSocketFactory());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getMetaWeatherResponseAsString(String requestUrl) {
         HttpsURLConnection urlConnection = null;
         BufferedReader reader = null;
-        String metaWeatherJsonAsString = null;
-        String city = strings[0];
         trustEveryone();
 
         try {
-            URL url = new URL(String.format("%s%s%s", MetaWeather.URL ,MetaWeather.QueryEndpoint, URLEncoder.encode(city, "UTF-8")));
+            URL url = new URL(requestUrl);
             urlConnection = (HttpsURLConnection) url.openConnection();
-            urlConnection.setInstanceFollowRedirects(true);
             urlConnection.connect();
 
             InputStream inputStream = urlConnection.getInputStream();
-            StringBuffer buffer = new StringBuffer();
             if (inputStream == null)
                 return null;
 
+            StringBuffer buffer = new StringBuffer();
             reader = new BufferedReader(new InputStreamReader(inputStream));
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null)
                 buffer.append(line + "\n");
-            }
-
-            if (buffer.length() == 0) {
+            if (buffer.length() == 0)
                 return null;
-            }
 
-            metaWeatherJsonAsString = buffer.toString();
-            JSONArray jsonArray = new JSONArray(metaWeatherJsonAsString);
-            if(jsonArray.length() == 0)
-                return null;
-            String firstFoundCityLocationId = jsonArray.getJSONObject(0).getString("woeid");
+            return buffer.toString();
         }
         catch(IOException e) {
-            e.printStackTrace();
-        }
-        catch(JSONException e) {
             e.printStackTrace();
         }
         finally {
@@ -86,32 +135,10 @@ public class FetchHelper extends AsyncTask<String, Void, String> {
 
         return null;
     }
-
-    public static void trustEveryone() {
-        try {
-            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier(){
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }});
-            SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new X509TrustManager[]{new X509TrustManager(){
-                public void checkClientTrusted(X509Certificate[] chain,
-                                               String authType) {}
-                public void checkServerTrusted(X509Certificate[] chain,
-                                               String authType) {}
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[0];
-                }}}, new SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(
-                    context.getSocketFactory());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
 
 class MetaWeather {
-    public static final String URL = "https://metaweather.com";
+    public static final String URL = "https://www.metaweather.com";
     public static final String QueryEndpoint = "/api/location/search/?query=";
     public static final String LocationEndpoint = "/api/location/";
 }

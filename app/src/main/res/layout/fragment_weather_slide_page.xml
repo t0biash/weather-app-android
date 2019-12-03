@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="Loading..." />
+        android:text="@string/loading_text" />
 
     <ImageView
         android:id="@+id/fragmentWeatherImage"
@@ -26,34 +26,34 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="Loading..." />
+        android:text="@string/loading_text" />
 
     <TextView
         android:id="@+id/fragmentWeatherMaxTemp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="Loading..." />
+        android:text="@string/loading_text" />
 
     <TextView
         android:id="@+id/fragmentWeatherAirPressure"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Loading..." />
+        android:text="@string/loading_text" />
 
     <TextView
         android:id="@+id/fragmentWeatherHumidity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="Loading..." />
+        android:text="@string/loading_text" />
 
     <TextView
         android:id="@+id/fragmentWeatherWind"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="Loading..." />
+        android:text="@string/loading_text" />
 
 </LinearLayout>

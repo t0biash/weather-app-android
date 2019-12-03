@@ -7,6 +7,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,14 +20,21 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private final long UPDATE_INTERVAL = 3000;
+    private final long FASTEST_INTERVAL = 2000;
+
     private FusedLocationProviderClient _locationClient;
     private LocationRequest locationRequest;
-    private long UPDATE_INTERVAL = 3000;
-    private long FASTEST_INTERVAL = 2000;
+
+    public String consolidatedWeatherAsString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
             _locationClient.getLastLocation().addOnSuccessListener(this, location -> {
                 if (location != null) {
                     String city = getCityFromCurrentLocation(location);
+                    ((TextView)findViewById(R.id.city)).setText(city);
+
                     new FetchHelper(this).execute(city);
                 }
                 else {
@@ -48,6 +58,18 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    public void onGetConsolidatedWeather() {
+        runOnUiThread(() -> {
+            try {
+                JSONArray consolidatedWeather = new JSONObject(consolidatedWeatherAsString).getJSONArray("consolidated_weather");
+                ((TextView) findViewById(R.id.currentTemperature)).setText(consolidatedWeather.getJSONObject(0).getInt("the_temp") + "°C");
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
@@ -60,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
                     _locationClient.getLastLocation().addOnSuccessListener(this, location -> {
                         if (location != null) {
                             String city = getCityFromCurrentLocation(location);
+                            ((TextView)findViewById(R.id.city)).setText(city);
+
+                            new FetchHelper(this).execute(city);
                         }
                         else {
                             startLocationUpdates();
@@ -78,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(UPDATE_INTERVAL);
         locationRequest.setFastestInterval(FASTEST_INTERVAL);
+        MainActivity mainActivity = this;
 
         _locationClient.requestLocationUpdates(locationRequest, new LocationCallback() {
             @Override
@@ -88,6 +114,9 @@ public class MainActivity extends AppCompatActivity {
                 for (Location location : locationResult.getLocations()) {
                     if (location != null) {
                         String city = getCityFromCurrentLocation(location);
+                        ((TextView)findViewById(R.id.city)).setText(city);
+
+                        new FetchHelper(mainActivity).execute(city);
                     }
                 }
             }
