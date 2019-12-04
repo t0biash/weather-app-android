@@ -1,7 +1,10 @@
 package pl.agh.kis.weatherapp;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -27,6 +30,7 @@ import javax.net.ssl.X509TrustManager;
 
 public class FetchHelper extends AsyncTask<String, Void, String> {
     private MainActivity _mainActivity;
+    private Bitmap _weatherImages;
 
     public FetchHelper(MainActivity mainActivity) {
         _mainActivity = mainActivity;
@@ -51,6 +55,13 @@ public class FetchHelper extends AsyncTask<String, Void, String> {
             if(metaWeatherResponseJsonAsString == null)
                 return null;
 
+            String currentWeatherStateAbbr = new JSONObject(metaWeatherResponseJsonAsString)
+                    .getJSONArray("consolidated_weather")
+                    .getJSONObject(0)
+                    .getString("weather_state_abbr");
+            url = String.format("%s%s%s.png", MetaWeather.URL, MetaWeather.WeatherStateImageEndpoint, currentWeatherStateAbbr);
+            _weatherImages = getMetaWeatherStateImage(url);
+
             return metaWeatherResponseJsonAsString;
         }
         catch (UnsupportedEncodingException ex) {
@@ -66,6 +77,8 @@ public class FetchHelper extends AsyncTask<String, Void, String> {
     @Override
     protected void onPostExecute(String result) {
         _mainActivity.consolidatedWeatherAsString = result;
+        ((ImageView)_mainActivity.findViewById(R.id.weatherImage)).setImageBitmap(_weatherImages);
+        ((ImageView)_mainActivity.findViewById(R.id.fragmentWeatherImage)).setImageBitmap((_weatherImages));
         _mainActivity.onGetConsolidatedWeather();
     }
 
@@ -96,7 +109,7 @@ public class FetchHelper extends AsyncTask<String, Void, String> {
         HttpsURLConnection urlConnection = null;
         BufferedReader reader = null;
         trustEveryone();
-
+        
         try {
             URL url = new URL(requestUrl);
             urlConnection = (HttpsURLConnection) url.openConnection();
@@ -135,10 +148,25 @@ public class FetchHelper extends AsyncTask<String, Void, String> {
 
         return null;
     }
+
+    private Bitmap getMetaWeatherStateImage(String requestUrl) {
+        Bitmap mIcon11 = null;
+
+        try {
+            InputStream in = new java.net.URL(requestUrl).openStream();
+            mIcon11 = BitmapFactory.decodeStream(in);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return mIcon11;
+    }
 }
 
 class MetaWeather {
     public static final String URL = "https://www.metaweather.com";
     public static final String QueryEndpoint = "/api/location/search/?query=";
     public static final String LocationEndpoint = "/api/location/";
+    public static final String WeatherStateImageEndpoint = "/static/img/weather/png/64/";
 }

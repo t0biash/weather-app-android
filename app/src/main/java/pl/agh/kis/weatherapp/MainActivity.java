@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ViewPager2 viewPager = findViewById(R.id.view_pager);
+        viewPager.setAdapter(new ScreenSlidePagerAdapter(this));
 
         _locationClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -64,7 +67,8 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(() -> {
             try {
                 JSONArray consolidatedWeather = new JSONObject(consolidatedWeatherAsString).getJSONArray("consolidated_weather");
-                ((TextView) findViewById(R.id.currentTemperature)).setText(consolidatedWeather.getJSONObject(0).getInt("the_temp") + "°C");
+                ((TextView)findViewById(R.id.currentTemperature)).setText(consolidatedWeather.getJSONObject(0).getInt("the_temp") + "°C");
+                setFragmentData(consolidatedWeather);
             }
             catch (JSONException e) {
                 e.printStackTrace();
@@ -136,5 +140,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return null;
+    }
+
+    private void setFragmentData(JSONArray consolidatedWeather) throws JSONException {
+        ((TextView)findViewById(R.id.fragmentWeatherDate)).setText(consolidatedWeather.getJSONObject(0).getString("applicable_date"));
+        ((TextView)findViewById(R.id.fragmentWeatherMinTemp)).setText(consolidatedWeather.getJSONObject(0).getInt("min_temp") + "°C");
+        ((TextView)findViewById(R.id.fragmentWeatherMaxTemp)).setText(consolidatedWeather.getJSONObject(0).getInt("max_temp") + "°C");
+        ((TextView)findViewById(R.id.fragmentWeatherAirPressure)).setText(consolidatedWeather.getJSONObject(0).getInt("air_pressure") + " hPa");
+        ((TextView)findViewById(R.id.fragmentWeatherHumidity)).setText(consolidatedWeather.getJSONObject(0).getInt("humidity") + " %");
+        ((TextView)findViewById(R.id.fragmentWeatherWind)).setText(consolidatedWeather.getJSONObject(0).getInt("wind_speed") + " " + consolidatedWeather.getJSONObject(0).getString("wind_direction_compass"));
     }
 }
