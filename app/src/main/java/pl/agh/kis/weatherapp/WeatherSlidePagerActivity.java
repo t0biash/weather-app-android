@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
-public class WeatherSlidePagerActivity extends FragmentActivity {
+/*public class WeatherSlidePagerActivity extends FragmentActivity {
     private static final int NUM_PAGES = 6;
 
     private ViewPager2 viewPager;
@@ -47,4 +47,4 @@ public class WeatherSlidePagerActivity extends FragmentActivity {
             return NUM_PAGES;
         }
     }
-}
+}*/
