@@ -16,6 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.viewpager2.widget.ViewPager2;
@@ -37,6 +38,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private final long UPDATE_INTERVAL = 3000;
     private final long FASTEST_INTERVAL = 2000;
+    private final int SELECT_CITY_REQUEST_CODE = 100;
 
     private FusedLocationProviderClient _locationClient;
     private LocationRequest locationRequest;
@@ -52,13 +54,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.action_new_city) {
-            Intent myIntent = new Intent(this, AddNewCityActivity.class);
-            this.startActivity(myIntent);
+    public boolean onOptionsItemSelected(@NonNull MenuItem menuItem) {
+        int menuItemId = menuItem.getItemId();
+
+        if (menuItemId == R.id.actionNewCity) {
+            Intent addNewCityActivity = new Intent(this, AddNewCityActivity.class);
+            this.startActivity(addNewCityActivity);
+        }
+        else if (menuItemId == R.id.actionBrowseCities) {
+            Intent browseCitiesActivity = new Intent(this, BrowseCitiesActivity.class);
+            this.startActivityForResult(browseCitiesActivity, SELECT_CITY_REQUEST_CODE);
         }
 
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(menuItem);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch(requestCode) {
+            case 1000:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    getCurrentLocationWeather();
+                }
+                else {
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                }
+            break;
+        }
     }
 
     @Override
@@ -66,22 +90,34 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        _locationClient = LocationServices.getFusedLocationProviderClient(this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] { Manifest.permission.ACCESS_COARSE_LOCATION }, 1000);
+        try {
+            _locationClient = LocationServices.getFusedLocationProviderClient(this);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1000);
+            } else {
+                getCurrentLocationWeather();
+            }
         }
-        else {
-            _locationClient.getLastLocation().addOnSuccessListener(this, location -> {
-                if (location != null) {
-                    String city = getCityFromCurrentLocation(location);
-                    ((TextView)findViewById(R.id.city)).setText(city);
+        catch(Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
-                    new FetchMetaWeatherTask(this).execute(city);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && requestCode == SELECT_CITY_REQUEST_CODE)  {
+            if (data.hasExtra("selectedCity")) {
+                String selectedCity = data.getExtras().getString("selectedCity");
+                if (selectedCity.equals("current")) {
+                    getCurrentLocationWeather();
                 }
                 else {
-                    startLocationUpdates();
+                    ((TextView) findViewById(R.id.city)).setText(selectedCity);
+                    new FetchMetaWeatherTask(this).execute(selectedCity);
                 }
-            });
+            }
         }
     }
 
@@ -98,32 +134,6 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         });
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        switch(requestCode) {
-            case 1000:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    _locationClient.getLastLocation().addOnSuccessListener(this, location -> {
-                        if (location != null) {
-                            String city = getCityFromCurrentLocation(location);
-                            ((TextView)findViewById(R.id.city)).setText(city);
-
-                            new FetchMetaWeatherTask(this).execute(city);
-                        }
-                        else {
-                            startLocationUpdates();
-                        }
-                    });
-                }
-                else {
-                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
-                }
-            break;
-        }
     }
 
     private void startLocationUpdates() {
@@ -149,6 +159,20 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }, Looper.getMainLooper());
+    }
+
+    private void getCurrentLocationWeather() {
+        _locationClient.getLastLocation().addOnSuccessListener(this, location -> {
+            if (location != null) {
+                String city = getCityFromCurrentLocation(location);
+                ((TextView)findViewById(R.id.city)).setText(city);
+
+                new FetchMetaWeatherTask(this).execute(city);
+            }
+            else {
+                startLocationUpdates();
+            }
+        });
     }
 
     private String getCityFromCurrentLocation(Location location) {

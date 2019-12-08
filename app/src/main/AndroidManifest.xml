@@ -5,12 +5,16 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <application
+        android:name="com.orm.SugarApp"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data android:name="DATABASE" android:value="weather_app.db" />
+        <meta-data android:name="VERSION" android:value="1" />
+        <meta-data android:name="QUERY_LOG" android:value="true" />
+        <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="pl.agh.kis.weatherapp" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,6 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:label="@string/app_name" android:name=".AddNewCityActivity"/>
+        <activity android:label="WeatherApp" android:name=".BrowseCitiesActivity" />
     </application>
 
 </manifest>

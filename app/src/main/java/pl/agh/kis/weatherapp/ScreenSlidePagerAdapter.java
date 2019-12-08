@@ -1,14 +1,8 @@
 package pl.agh.kis.weatherapp;
 
-import android.graphics.Bitmap;
-
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-
-import org.json.JSONArray;
-
-import java.util.Dictionary;
 
 public class ScreenSlidePagerAdapter extends FragmentStateAdapter {
     private MainActivity _mainActivity;
