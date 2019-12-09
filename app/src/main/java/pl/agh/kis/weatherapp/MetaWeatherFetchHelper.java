@@ -78,7 +78,7 @@ public final class MetaWeatherFetchHelper {
                     reader.close();
                 }
                 catch (final IOException e) {
-                    Log.e("MetaWeahterFetchHelper", "Error closing stream", e);
+                    Log.e("MetaWeatherFetchHelper", "Error closing stream", e);
                 }
             }
         }

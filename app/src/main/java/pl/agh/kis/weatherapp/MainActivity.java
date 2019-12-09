@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                     getCurrentLocationWeather();
                 }
                 else {
-                    ((TextView) findViewById(R.id.city)).setText(selectedCity);
+                    ((TextView)findViewById(R.id.city)).setText(selectedCity);
                     new FetchMetaWeatherTask(this).execute(selectedCity);
                 }
             }

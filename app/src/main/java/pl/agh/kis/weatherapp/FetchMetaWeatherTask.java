@@ -24,15 +24,18 @@ public class FetchMetaWeatherTask extends AsyncTask<String, Void, String> {
         try {
             String url = String.format("%s%s%s", MetaWeather.URL ,MetaWeather.QueryEndpoint, URLEncoder.encode(city, "UTF-8"));
             String metaWeatherResponseJsonAsString = MetaWeatherFetchHelper.getMetaWeatherResponseAsString(url);
+
             if(metaWeatherResponseJsonAsString == null)
                 return null;
+
             JSONArray locationSearchResponse = new JSONArray(metaWeatherResponseJsonAsString);
             if(locationSearchResponse.length() == 0)
                 return null;
-            String firstFoundCityLocationId = locationSearchResponse.getJSONObject(0).getString("woeid");
 
+            String firstFoundCityLocationId = locationSearchResponse.getJSONObject(0).getString("woeid");
             url = String.format("%s%s%s", MetaWeather.URL, MetaWeather.LocationEndpoint, firstFoundCityLocationId);
             metaWeatherResponseJsonAsString = MetaWeatherFetchHelper.getMetaWeatherResponseAsString(url);
+
             if(metaWeatherResponseJsonAsString == null)
                 return null;
 

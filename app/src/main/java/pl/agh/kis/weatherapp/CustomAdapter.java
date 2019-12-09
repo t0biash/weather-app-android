@@ -9,8 +9,6 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
 import pl.agh.kis.weatherapp.model.City;
@@ -18,7 +16,7 @@ import pl.agh.kis.weatherapp.model.City;
 public class CustomAdapter extends BaseAdapter implements ListAdapter {
     private ArrayList<String> _list;
     private Context _context;
-    BrowseCitiesActivity _browseCitiesActivity;
+    private BrowseCitiesActivity _browseCitiesActivity;
 
 
     public CustomAdapter(ArrayList<String> list, Context context) {
@@ -57,7 +55,7 @@ public class CustomAdapter extends BaseAdapter implements ListAdapter {
         Button selectBtn = (Button)view.findViewById(R.id.selectCityBtn);
 
         deleteBtn.setOnClickListener(v -> {
-            City cityToDelete = (City) City.find(City.class, "name = ?", (String) savedCity.getText()).get(0);
+            City cityToDelete = (City)City.find(City.class, "name = ?", (String) savedCity.getText()).get(0);
             cityToDelete.delete();
             notifyDataSetChanged();
         });

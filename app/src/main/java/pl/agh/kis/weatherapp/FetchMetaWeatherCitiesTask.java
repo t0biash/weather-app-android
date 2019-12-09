@@ -24,8 +24,10 @@ public class FetchMetaWeatherCitiesTask extends AsyncTask<String, Void, List<Str
         try {
             String url = String.format("%s%s%s", MetaWeather.URL, MetaWeather.QueryEndpoint, URLEncoder.encode(query, "UTF-8"));
             String metaWeatherResponseJsonAsString = MetaWeatherFetchHelper.getMetaWeatherResponseAsString(url);
+
             if (metaWeatherResponseJsonAsString == null)
                 return null;
+
             JSONArray cities = new JSONArray(metaWeatherResponseJsonAsString);
             if (cities.length() == 0)
                 return null;
@@ -46,7 +48,7 @@ public class FetchMetaWeatherCitiesTask extends AsyncTask<String, Void, List<Str
     }
 
     @Override
-    protected void onPostExecute(List<String> result) {
-        ((ListView)_addNewCityActivity.findViewById(R.id.foundCities)).setAdapter(new ArrayAdapter<>(_addNewCityActivity, R.layout.new_city_row, result));
+    protected void onPostExecute(List<String> foundCities) {
+        ((ListView)_addNewCityActivity.findViewById(R.id.foundCities)).setAdapter(new ArrayAdapter<>(_addNewCityActivity, R.layout.new_city_row, foundCities));
     }
 }

@@ -7,39 +7,44 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.6">
 
-        <TextView
-            android:id="@+id/city"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/weatherImage"
-            android:gravity="center_horizontal"
-            android:text="@string/loading_text" />
+            android:layout_height="match_parent"
+            android:layout_gravity="center">
 
-        <ImageView
-            android:id="@+id/weatherImage"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_alignBottom="@id/currentTemperature"
-            android:layout_centerInParent="true"
-            android:layout_centerVertical="false"
-            android:layout_marginBottom="31dp"
-            app:srcCompat="@drawable/ic_launcher_foreground" />
+            <TextView
+                android:id="@+id/city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textSize="21dp"
+                android:layout_marginBottom="5dp"
+                android:text="@string/loading_text" />
 
-        <TextView
-            android:id="@+id/currentTemperature"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/loading_text" />
+            <ImageView
+                android:id="@+id/weatherImage"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_gravity="center"
+                app:srcCompat="@drawable/ic_launcher_foreground" />
 
-    </RelativeLayout>
+            <TextView
+                android:id="@+id/currentTemperature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="@string/loading_text" />
+        </LinearLayout>
 
-    <RelativeLayout
+    </ScrollView>
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.4">
@@ -47,7 +52,9 @@
         <androidx.viewpager2.widget.ViewPager2
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="12dp"
             android:id="@+id/view_pager" />
 
-    </RelativeLayout>
+    </ScrollView>
+
 </LinearLayout>

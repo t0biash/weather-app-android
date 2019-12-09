@@ -15,14 +15,14 @@
         <meta-data android:name="VERSION" android:value="1" />
         <meta-data android:name="QUERY_LOG" android:value="true" />
         <meta-data android:name="DOMAIN_PACKAGE_NAME" android:value="pl.agh.kis.weatherapp" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" android:configChanges="orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:label="@string/app_name" android:name=".AddNewCityActivity"/>
+        <activity android:label="@string/app_name" android:name=".AddNewCityActivity" />
         <activity android:label="WeatherApp" android:name=".BrowseCitiesActivity" />
     </application>
 

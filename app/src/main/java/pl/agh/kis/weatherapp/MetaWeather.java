@@ -1,6 +1,6 @@
 package pl.agh.kis.weatherapp;
 
-public class MetaWeather {
+public final class MetaWeather {
     public static final String URL = "https://www.metaweather.com";
     public static final String QueryEndpoint = "/api/location/search/?query=";
     public static final String LocationEndpoint = "/api/location/";

@@ -31,7 +31,6 @@ public class AddNewCityActivity extends AppCompatActivity {
             String selectedItem = (String)parent.getItemAtPosition(position);
             City city = new City(selectedItem);
             city.save();
-
             finish();
         });
         searchButton.setOnClickListener(v -> {
