@@ -24,11 +24,7 @@ public class BrowseCitiesActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        ArrayList<String> savedCities = new ArrayList<>();
-        for(City city : City.listAll(City.class))
-            savedCities.add(city.name);
-        CustomAdapter adapter = new CustomAdapter(savedCities, this);
-        ((ListView)findViewById(R.id.savedCities)).setAdapter(adapter);
+        onCitiesListUpdate();
 
         Button getCurrentLocationWeather = (Button)findViewById(R.id.getCurrentLocationWeatherBtn);
         getCurrentLocationWeather.setOnClickListener(v -> {
@@ -50,5 +46,13 @@ public class BrowseCitiesActivity extends AppCompatActivity {
         data.putExtra("selectedCity", selectedCity);
         setResult(RESULT_OK, data);
         finish();
+    }
+
+    public void onCitiesListUpdate() {
+        ArrayList<String> savedCities = new ArrayList<>();
+        for(City city : City.listAll(City.class))
+            savedCities.add(city.name);
+        CustomAdapter adapter = new CustomAdapter(savedCities, this);
+        ((ListView)findViewById(R.id.savedCities)).setAdapter(adapter);
     }
 }

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class CustomAdapter extends BaseAdapter implements ListAdapter {
         deleteBtn.setOnClickListener(v -> {
             City cityToDelete = (City)City.find(City.class, "name = ?", (String) savedCity.getText()).get(0);
             cityToDelete.delete();
-            notifyDataSetChanged();
+            _browseCitiesActivity.onCitiesListUpdate();
         });
         selectBtn.setOnClickListener(v -> {
             _browseCitiesActivity.onSelectCity(savedCity.getText().toString());
